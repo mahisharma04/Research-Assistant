@@ -1,44 +1,44 @@
-# [Project name]
+# Research Assistant for College Students
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A Streamlit app that researches a topic, writes a source-grounded summary, and checks it with three LangGraph agents.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `streamlit run app.py --server.port 5000 --server.address 0.0.0.0 --server.headless true` — run the research assistant
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required secret: `GOOGLE_API_KEY` — Google Gemini API key
 
 ## Stack
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Python, Streamlit, LangGraph, Google Gemini, and DuckDuckGo Search
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `agents.py` — researcher, writer, reviewer, and LangGraph flow
+- `app.py` — Streamlit interface
+- `test_runner.py` — optional five-topic test run; run manually
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Research summaries use only snippets returned by web search; source URLs are shown with the result.
+- The reviewer may request at most two writer revisions.
+- The Gemini credential belongs in Replit Secrets, never in source files.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Students can enter a topic, follow the three-agent workflow, read the final summary and researcher notes, inspect sources and agent logs, and download the summary as Markdown.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Preserve the supplied Python libraries and agent workflow; do not add a database, login, or unrelated features.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- `GOOGLE_API_KEY` must be added to Replit Secrets before running a research request.
+- Do not run `test_runner.py` automatically; run it manually when requested.
 
 ## Pointers
 
