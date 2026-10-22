@@ -23,7 +23,7 @@ from langgraph.graph import END, StateGraph
 load_dotenv()
 
 MAX_REVISIONS = 2
-MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")  # reads GOOGLE_API_KEY from env
+MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")  # reads GOOGLE_API_KEY from env
 
 
 # ---------------------------------------------------------------- shared state
@@ -40,12 +40,12 @@ class ResearchState(TypedDict, total=False):
 
 
 # ---------------------------------------------------------------------- helpers
-def _llm(temperature: float = 0.3) -> ChatGoogleGenerativeAI:
-    return ChatGoogleGenerativeAI(model=MODEL, temperature=temperature)
+def _llm() -> ChatGoogleGenerativeAI:
+    return ChatGoogleGenerativeAI(model=MODEL, temperature=None)
 
 
-def _ask(system: str, user: str, temperature: float = 0.3) -> str:
-    resp = _llm(temperature).invoke([("system", system), ("human", user)])
+def _ask(system: str, user: str) -> str:
+    resp = _llm().invoke([("system", system), ("human", user)])
     content = resp.content
     if isinstance(content, list):  # some versions return a list of parts
         content = "".join(p.get("text", "") if isinstance(p, dict) else str(p) for p in content)
@@ -134,7 +134,6 @@ def reviewer(state: ResearchState) -> dict:
         '{"verdict": "APPROVED" or "REVISE", "issues": ["issue 1", "issue 2"]}\n'
         "Use APPROVED only if every claim is supported by the notes.",
         f"NOTES:\n{state['notes']}\n\nDRAFT:\n{state['draft']}",
-        temperature=0.0,
     )
     try:
         data = json.loads(re.search(r"\{.*\}", raw, re.S).group(0))

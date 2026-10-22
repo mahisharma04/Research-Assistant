@@ -31,7 +31,7 @@ if run:
         status_box.update(label="Done", state="complete", expanded=False)
     except Exception as e:
         status_box.update(label="Something went wrong", state="error")
-        st.error(f"{type(e).__name__}: {e}\n\nCheck that GOOGLE_API_KEY is set in Replit Secrets.")
+        st.error(f"{type(e).__name__}: {e}")
         st.stop()
 
     if not state.get("notes"):
