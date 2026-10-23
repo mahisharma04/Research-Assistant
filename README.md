@@ -3,11 +3,19 @@
 Researcher -> Writer -> Reviewer (with a revision loop, max 2 times).
 
 ## Setup
-1. `python -m venv venv` then activate it
-2. `pip install -r requirements.txt`
-3. Add your Gemini API key as the `GOOGLE_API_KEY` Replit Secret
-4. Run the app: `streamlit run app.py --server.port 5000 --server.address 0.0.0.0 --server.headless true`
-5. Run the tests (evidence for report): `python test_runner.py`
+1. Create and activate a virtual environment, then install dependencies:
+   `python -m venv .venv` and `pip install -r requirements.txt`
+2. For local use, put your Gemini key in a `.env` file:
+   `GOOGLE_API_KEY=your_key_here`
+3. Run locally with `streamlit run app.py --server.port 5000`
+4. To deploy, create an app at [Streamlit Community Cloud](https://share.streamlit.io/)
+   from `mahisharma04/Research-Assistant`, branch `main`, file `app.py`.
+   Add this in the app's Settings > Secrets before deploying:
+   `GOOGLE_API_KEY = "your_key_here"`
+5. Run the tests manually with `python test_runner.py`.
+
+Never commit `.env` or Streamlit `secrets.toml` files. The default model is
+`gemini-3.6-flash`; set `GEMINI_MODEL` to use another supported model.
 
 ## Files
 - `agents.py`: the three agents, the search tool, and the LangGraph workflow

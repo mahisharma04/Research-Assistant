@@ -19,11 +19,13 @@ from dotenv import load_dotenv
 from ddgs import DDGS
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import END, StateGraph
+import streamlit as st
+from streamlit.errors import StreamlitSecretNotFoundError
 
 load_dotenv()
 
 MAX_REVISIONS = 2
-MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")  # reads GOOGLE_API_KEY from env
+MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
 
 
 # ---------------------------------------------------------------- shared state
@@ -41,7 +43,22 @@ class ResearchState(TypedDict, total=False):
 
 # ---------------------------------------------------------------------- helpers
 def _llm() -> ChatGoogleGenerativeAI:
-    return ChatGoogleGenerativeAI(model=MODEL, temperature=None)
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        try:
+            api_key = st.secrets.get("GOOGLE_API_KEY")
+        except StreamlitSecretNotFoundError:
+            api_key = None
+    if not api_key:
+        raise RuntimeError(
+            "GOOGLE_API_KEY is not configured. Add it to the project .env file "
+            "for local use or to Streamlit Cloud app secrets."
+        )
+    return ChatGoogleGenerativeAI(
+        model=MODEL,
+        google_api_key=api_key,
+        temperature=None,
+    )
 
 
 def _ask(system: str, user: str) -> str:
